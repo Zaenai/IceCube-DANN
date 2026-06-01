@@ -1,0 +1,55 @@
+model:
+  version: v2
+  input_mode: none
+  max_pulses_per_dom: 84
+  d_model: 256
+  max_doms: 128
+  num_heads: 8
+  num_layers: 6
+  hidden_dim: 1024
+  head_hidden_dim: 1024
+  dropout: 0.1
+  domain_adapt: true
+
+training:
+  epochs: 10
+  batch_size: 4096
+  lr: 3e-4
+  warmup_steps: 2000
+  weight_decay: 0.01
+  gradient_clip: 1.0
+  use_amp: true
+
+# https://claude.ai/chat/3be5b963-434a-4196-b89e-5cca49eca464
+# uv run python scripts/train_flat.py --config configs/train_flat_da.yaml --epoch 3 --workers 0 --batch-size 256 --lr 1.5e-5
+
+data:
+  max_events: 5000000
+  val_events: 2000
+  num_workers: 0
+  mc_config_path:   /home/ahdu/Desktop/IceCube/iceaggr/data/mc_data_config.yaml
+  real_config_path: /home/ahdu/Desktop/IceCube/iceaggr/data/real_data_config.yaml
+  val_config_path: /home/ahdu/Desktop/IceCube/iceaggr/data/val_data_config.yaml
+  geometry_path: /home/ahdu/Desktop/IceCube/iceaggr/data/sensor_geometry_normalized.csv
+  mc_train_batches:   [1, 325]
+  real_train_batches: [326, 650]
+  val_batches: [651, 655]
+  #train_batches: [1, 650]
+  #val_batches: [651, 655]
+  val_per_epoch: 5
+
+domain_adaptation:
+  enabled: true
+  lambda_domain: 0.001
+  grl_gamma: 3
+
+wandb:
+  enabled: true
+  project: iceaggr
+  name: baseline-v2-K84-5m
+  tags: [flat-transformer-v2, K84, 5M-params, input-none, baseline]
+
+checkpoint:
+  dir: checkpoints
+  save_every: 1
+  resume: null
